@@ -11,6 +11,7 @@
     opacity: 0.5;
     background-color: white;
     border: 1px dashed grey;
+    box-sizing: border-box; 
   }
   </style>
 </head>
@@ -62,8 +63,8 @@ function cropTo(x, y) {
   $crop.css({
     top: Math.min(cropY0, cropY1),
     left: Math.min(cropX0, cropX1),
-    width: Math.abs(cropX0 - cropX1)-2,
-    height: Math.abs(cropY0 - cropY1)-2,
+    width: Math.abs(cropX0 - cropX1),
+    height: Math.abs(cropY0 - cropY1),
   });
 }
 
