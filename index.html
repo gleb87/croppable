@@ -3,6 +3,16 @@
 <head>
   <meta charset="utf-8">
   <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <style>
+  .cropping-rectangle {
+    position: absolute;
+    z-index: 100;
+
+    opacity: 0.5;
+    background-color: white;
+    border: 1px dashed grey;
+  }
+  </style>
 </head>
 <body>
 
@@ -12,6 +22,84 @@
 <script>
 function Croppable(options) {
   /* ваш код */
+  var $elem = $(options.elem);
+  $elem.addClass("croppable");
+
+  var $crop;
+
+  var self = this;
+  var cropX0, cropY0, cropX1, cropY1;
+
+  $(document).on("mousedown", ".croppable", onElemMousedown);
+
+  $elem.on("dragstart selectstart", false);
+
+  function onElemMousedown(e) {
+    startCrop(e.pageX, e.pageY);
+  }
+
+  function startCrop(x, y) {
+    cropX0 = x;
+    cropY0 = y;
+
+    $crop = $("<div/>", {
+      "class": "cropping-rectangle",
+    }).appendTo( $(document.body) );
+
+    $(document).on("mousemove.crop", onMousemoveCrop)
+    .on("mouseup.crop", onMouseupCrop);
+  }
+
+function onMousemoveCrop(e) {
+  cropTo(e.pageX, e.pageY);
+}
+
+function cropTo(x, y) {
+  cropX1 = x;
+  cropY1 = y;
+  fixCrop();
+
+  $crop.css({
+    top: Math.min(cropY0, cropY1),
+    left: Math.min(cropX0, cropX1),
+    width: Math.abs(cropX0 - cropX1),
+    height: Math.abs(cropY0 - cropY1),
+  });
+}
+
+function onMouseupCrop(e) {
+  endCrop(e.pageX, e.pageY);
+}
+
+function endCrop(x, y) {
+  cropX1 = x;
+  cropY1 = y;
+  fixCrop();
+
+  $(document).off("crop");
+  $crop.remove();
+
+  $(self).triggerHandler({
+    type: "crop",
+    top: Math.min(cropY0, cropY1) - $elem.offset().top,
+    left: Math.min(cropX0, cropX1) - $elem.offset().left,
+    width: Math.abs(cropX0 - cropX1),
+    height: Math.abs(cropY0 - cropY1),
+  });
+}
+
+function fixCrop() {
+  var elemLeft = $elem.offset().left;
+  var elemTop = $elem.offset().top;
+  var elemRight = $elem.offset().left + $elem.width();
+  var elemBottom =  $elem.offset().top + $elem.height();
+
+  if (cropX1 < elemLeft) cropX1 = elemLeft;
+  if (cropY1 < elemTop) cropY1 = elemTop;
+  if (cropX1 > elemRight) cropX1 = elemRight;
+  if (cropY1 > elemBottom) cropY1 = elemBottom;
+}
+
 }
 
 var croppable = new Croppable({
