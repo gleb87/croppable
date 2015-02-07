@@ -62,8 +62,8 @@ function cropTo(x, y) {
   $crop.css({
     top: Math.min(cropY0, cropY1),
     left: Math.min(cropX0, cropX1),
-    width: Math.abs(cropX0 - cropX1),
-    height: Math.abs(cropY0 - cropY1),
+    width: Math.abs(cropX0 - cropX1)-2,
+    height: Math.abs(cropY0 - cropY1)-2,
   });
 }
 
@@ -76,7 +76,7 @@ function endCrop(x, y) {
   cropY1 = y;
   fixCrop();
 
-  $(document).off("crop");
+  $(document).off(".crop");
   $crop.remove();
 
   $(self).triggerHandler({
